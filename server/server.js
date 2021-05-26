@@ -37,6 +37,7 @@ app.get('/artist', (req, res) => {
 
     pool.query(queryText)
     .then( (result) => {
+    
         res.send(result.rows);
     }).catch (err => {
         console.log(err);
@@ -47,19 +48,46 @@ app.get('/artist', (req, res) => {
 });
 
 app.post('/artist', (req, res) => {
-    artistList.push(req.body);
-  //  res.sendStatus(201);
+    console.log('req.body', req.body)
+
+    let queryText = `INSERT INTO "artist" ("name", "birthdate") 
+    VALUES ($1, $2);`
+
+    // this adds fine, but the ID of a new artist to the DB was '1', which already exists, thought serial prevented this but 
+
+    let values = [req.body.name, req.body.birthdate];
+
+    pool.query(queryText, values)
+    .then( (result) => {
+        res.sendStatus(201);
+    }).catch(err => {
+        console.log(err);
+        res.sendStatus(500);
+        
+    })
+
+
+
 });
 
 // song routes
 
 app.get('/song', (req, res) => {
     console.log(`In /songs GET`);
-  //  res.send(songList);
+    let queryText = `SELECT * FROM "song" ORDER BY "title" DESC;`
+
+    pool.query(queryText)
+    .then( (result) => {
+    
+        res.send(result.rows);
+    }).catch (err => {
+        console.log(err);
+        res.sendStatus(500);
+    })
 });
 
 app.post('/song', (req, res) => {
-    songList.push(req.body);
+   // songList.push(req.body);
    // res.sendStatus(201);
 });
 
